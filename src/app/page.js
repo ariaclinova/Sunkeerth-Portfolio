@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getProjects, getHighlights, getArticles, getSideProjects, getSiteConfig } from '@/lib/data'
 import Nav from '@/components/Nav'
 import Hero from '@/components/Hero'
