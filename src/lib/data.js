@@ -241,7 +241,7 @@ export async function getProjects() {
   try {
     const { data, error } = await sb.from('projects').select('*').order('sort_order', { ascending: true })
     if (error) throw error
-    return data.map((p) => ({ ...p, stats: p.stats || [], process_steps: p.process_steps || [], impact: p.impact || [] }))
+    return data.map((p) => ({ ...p, stats: p.stats || [], process_steps: p.process_steps || [], impact: p.impact || [], hero_images: p.hero_images || [], overview_images: p.overview_images || [], challenge_images: p.challenge_images || [], process_images: p.process_images || [], solution_images: p.solution_images || [], impact_images: p.impact_images || [] }))
   } catch { return fallbackProjects }
 }
 

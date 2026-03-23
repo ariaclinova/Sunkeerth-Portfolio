@@ -20,6 +20,47 @@ export async function generateMetadata({ params }) {
   }
 }
 
+function hasImages(images) {
+  return Array.isArray(images) && images.some((img) => img?.url)
+}
+
+function ImageGallery({ images }) {
+  if (!hasImages(images)) return null
+  const items = images.filter((img) => img?.url)
+
+  // Group images into rows based on layout
+  const rows = []
+  let currentRow = []
+
+  items.forEach((img) => {
+    const layout = img.layout || 'full'
+    if (layout === 'full') {
+      if (currentRow.length > 0) { rows.push(currentRow); currentRow = [] }
+      rows.push([img])
+    } else {
+      currentRow.push(img)
+      const maxInRow = layout === 'third' ? 3 : 2
+      if (currentRow.length >= maxInRow) { rows.push(currentRow); currentRow = [] }
+    }
+  })
+  if (currentRow.length > 0) rows.push(currentRow)
+
+  return (
+    <div className="cs-gallery">
+      {rows.map((row, ri) => (
+        <div className="cs-gallery__row" key={ri}>
+          {row.map((img, ii) => (
+            <div key={ii} className={`cs-gallery__item cs-gallery__item--${img.layout || 'full'}`}>
+              <img src={img.url} alt={img.caption || ''} loading="lazy" />
+              {img.caption && <p className="cs-gallery__caption">{img.caption}</p>}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default async function CaseStudyPage({ params }) {
   const { id } = await params
   const [project, projects] = await Promise.all([
@@ -63,6 +104,15 @@ export default async function CaseStudyPage({ params }) {
         .cs-section__label { font-family: var(--font-display); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 24px; }
         .cs-section__text { font-family: var(--font-body); font-size: 16px; color: var(--text-secondary); line-height: 1.7; max-width: 680px; }
         .cs-image-placeholder { width: 100%; aspect-ratio: 16/9; border-radius: 12px; margin: 40px 0 0; background: linear-gradient(145deg, var(--bg-secondary), var(--border-light)); }
+        .cs-gallery { margin-top: 40px; }
+        .cs-gallery__row { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+        .cs-gallery__item { border-radius: 12px; overflow: hidden; background: var(--bg-secondary); }
+        .cs-gallery__item--full { width: 100%; }
+        .cs-gallery__item--half { width: calc(50% - 8px); }
+        .cs-gallery__item--third { width: calc(33.333% - 11px); }
+        .cs-gallery__item img { width: 100%; height: auto; display: block; }
+        .cs-gallery__caption { font-family: var(--font-body); font-size: 13px; color: var(--text-tertiary); text-align: center; padding: 10px 12px; }
+        @media (max-width: 640px) { .cs-gallery__item--half, .cs-gallery__item--third { width: 100%; } }
         .cs-process-steps { display: flex; flex-direction: column; gap: 28px; }
         .cs-step { display: grid; grid-template-columns: 36px 1fr; gap: 16px; }
         .cs-step__num { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text-tertiary); padding-top: 2px; }
@@ -99,44 +149,61 @@ export default async function CaseStudyPage({ params }) {
             <div><p className="cs-meta__label">Year</p><p className="cs-meta__value">{project.year}</p></div>
           </div>
 
+          {/* Hero Images */}
+          <ImageGallery images={project.hero_images} />
+
           <div className="cs-section reveal">
             <p className="cs-section__label">Overview</p>
             <p className="cs-section__text">{project.overview}</p>
+            <ImageGallery images={project.overview_images} />
           </div>
 
           <div className="cs-section reveal">
             <p className="cs-section__label">Challenge</p>
             <p className="cs-section__text">{project.challenge}</p>
-            <div className="cs-image-placeholder" />
+            <ImageGallery images={project.challenge_images} />
           </div>
 
-          <div className="cs-section reveal">
-            <p className="cs-section__label">Process</p>
-            <div className="cs-process-steps">
-              {(project.process_steps || []).map((step, i) => (
-                <div className="cs-step" key={i}>
-                  <span className="cs-step__num">{String(i + 1).padStart(2, '0')}</span>
-                  <div>
-                    <p className="cs-step__title">{step.step}</p>
-                    <p className="cs-step__detail">{step.detail}</p>
+          {(project.process_steps || []).length > 0 && (
+            <div className="cs-section reveal">
+              <p className="cs-section__label">Process</p>
+              <div className="cs-process-steps">
+                {(project.process_steps || []).map((step, i) => (
+                  <div className="cs-step" key={i}>
+                    <span className="cs-step__num">{String(i + 1).padStart(2, '0')}</span>
+                    <div>
+                      <p className="cs-step__title">{step.step}</p>
+                      <p className="cs-step__detail">{step.detail}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <ImageGallery images={project.process_images} />
             </div>
-            <div className="cs-image-placeholder" />
-          </div>
+          )}
 
-          <div className="cs-section reveal">
-            <p className="cs-section__label">Impact</p>
-            <div className="cs-impact-grid">
-              {(project.impact || []).map((item, i) => (
-                <div key={i}>
-                  <p className="cs-impact__metric">{item.metric}</p>
-                  <p className="cs-impact__label">{item.label}</p>
-                </div>
-              ))}
+          {/* Solution Showcase */}
+          {hasImages(project.solution_images) && (
+            <div className="cs-section reveal">
+              <p className="cs-section__label">Solution</p>
+              <ImageGallery images={project.solution_images} />
             </div>
-          </div>
+          )}
+
+          {(project.impact || []).length > 0 && (
+            <div className="cs-section reveal">
+              <p className="cs-section__label">Impact</p>
+              <div className="cs-impact-grid">
+                {(project.impact || []).map((item, i) => (
+                  <div key={i}>
+                    <p className="cs-impact__metric">{item.metric}</p>
+                    <p className="cs-impact__label">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+              <ImageGallery images={project.impact_images} />
+            </div>
+          )}
 
           {nextProject && (
             <div className="cs-next reveal">

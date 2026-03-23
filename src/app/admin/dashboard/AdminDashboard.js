@@ -402,6 +402,108 @@ function ProjectsList({ projects, onEdit, onNew, onDelete }) {
 /* ========================================
    PROJECT FORM (the big one)
    ======================================== */
+/* ========================================
+   IMAGE GALLERY EDITOR (reusable)
+   ======================================== */
+function ImageGalleryEditor({ images, onChange, onUpload, uploading, label, help }) {
+  const items = Array.isArray(images) ? images : []
+
+  const addImage = () => {
+    onChange([...items, { url: '', caption: '', layout: 'full' }])
+  }
+
+  const updateImage = (i, key, val) => {
+    const arr = [...items]
+    arr[i] = { ...arr[i], [key]: val }
+    onChange(arr)
+  }
+
+  const removeImage = (i) => {
+    onChange(items.filter((_, j) => j !== i))
+  }
+
+  const handleUpload = async (e, i) => {
+    const url = await onUpload(e)
+    if (url) updateImage(i, 'url', url)
+  }
+
+  return (
+    <div style={{ marginTop: 16, padding: 16, background: '#f9f9f9', borderRadius: 10, border: '1px dashed #ddd' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{label || 'Section Images'}</p>
+          {help && <p className="adm-field__help">{help}</p>}
+        </div>
+        <button type="button" className="adm-repeater__add" style={{ margin: 0, padding: '6px 14px' }} onClick={addImage}>+ Add Image</button>
+      </div>
+
+      {items.length === 0 && (
+        <p style={{ fontSize: 13, color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px 0' }}>
+          No images yet. Click "+ Add Image" to add product screenshots, mockups, or diagrams.
+        </p>
+      )}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {items.map((img, i) => (
+          <div key={i} style={{ background: '#fff', borderRadius: 8, padding: 14, border: '1px solid var(--border)' }}>
+            {/* Preview */}
+            {img.url && (
+              <img
+                src={img.url}
+                alt={img.caption || ''}
+                style={{ width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 6, marginBottom: 10 }}
+              />
+            )}
+            {!img.url && (
+              <div style={{ width: '100%', height: 80, background: '#f0f0f0', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10, fontSize: 13, color: 'var(--text-tertiary)' }}>
+                No image — upload or paste URL below
+              </div>
+            )}
+
+            {/* Upload + URL */}
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleUpload(e, i)}
+                disabled={uploading}
+                style={{ flex: 1, fontSize: 12 }}
+              />
+              {uploading && <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Uploading...</span>}
+            </div>
+            <input
+              value={img.url || ''}
+              onChange={(e) => updateImage(i, 'url', e.target.value)}
+              placeholder="Or paste image URL"
+              style={{ width: '100%', fontSize: 13, padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 6, marginBottom: 8 }}
+            />
+
+            {/* Caption + Layout + Remove */}
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                value={img.caption || ''}
+                onChange={(e) => updateImage(i, 'caption', e.target.value)}
+                placeholder="Caption (optional)"
+                style={{ flex: 1, fontSize: 13, padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 6 }}
+              />
+              <select
+                value={img.layout || 'full'}
+                onChange={(e) => updateImage(i, 'layout', e.target.value)}
+                style={{ fontSize: 13, padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 6, background: '#fff' }}
+              >
+                <option value="full">Full width</option>
+                <option value="half">Half (side by side)</option>
+                <option value="third">Third (3 across)</option>
+              </select>
+              <button type="button" className="adm-repeater__remove" onClick={() => removeImage(i)}>×</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploading }) {
   const isNew = project._isNew
   const [f, setF] = useState({
@@ -413,18 +515,19 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
     stats: [{ value: '', label: '' }],
     process_steps: [{ step: '', detail: '' }],
     impact: [{ metric: '', label: '' }],
+    hero_images: [], overview_images: [], challenge_images: [],
+    process_images: [], solution_images: [], impact_images: [],
     next_project: '', sort_order: 0,
     ...project,
   })
 
-  // Make sure arrays are arrays
   const stats = Array.isArray(f.stats) ? f.stats : []
   const steps = Array.isArray(f.process_steps) ? f.process_steps : []
   const impact = Array.isArray(f.impact) ? f.impact : []
 
   const set = (key, val) => setF((prev) => ({ ...prev, [key]: val }))
 
-  const handleImageUpload = async (e) => {
+  const handleCoverUpload = async (e) => {
     const url = await onUpload(e)
     if (url) set('image_url', url)
   }
@@ -433,7 +536,6 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
     e.preventDefault()
     const data = { ...f }
     if (isNew) data._isNew = true
-    // Auto-generate id from name if empty
     if (!data.id && data.name) {
       data.id = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
     }
@@ -500,12 +602,12 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
       <div className="adm-form__section">
         <p className="adm-form__section-label">Cover Image & Appearance</p>
         <div className="adm-field">
-          <label>Cover Image</label>
+          <label>Cover Image (shown on project card)</label>
           {f.image_url && <img src={f.image_url} alt="" className="adm-field__img-preview" />}
-          <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+          <input type="file" accept="image/*" onChange={handleCoverUpload} disabled={uploading} />
           {uploading && <p className="adm-field__help">Uploading...</p>}
           <input value={f.image_url || ''} onChange={(e) => set('image_url', e.target.value)} placeholder="Or paste image URL" style={{ marginTop: 8 }} />
-          <p className="adm-field__help">If no image, the gradient below is used as the cover</p>
+          <p className="adm-field__help">If no image, the gradient is used as the cover</p>
         </div>
         <div className="adm-form__row">
           <div className="adm-field">
@@ -532,6 +634,20 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
         </div>
       </div>
 
+      {/* Hero Images */}
+      <div className="adm-form__section">
+        <p className="adm-form__section-label">Hero Images</p>
+        <p className="adm-field__help" style={{ marginBottom: 4 }}>Large images shown at the top of the case study, right after the hero banner</p>
+        <ImageGalleryEditor
+          images={f.hero_images}
+          onChange={(imgs) => set('hero_images', imgs)}
+          onUpload={onUpload}
+          uploading={uploading}
+          label="Hero showcase images"
+          help="Add key product screenshots or hero shots. These appear prominently at the top."
+        />
+      </div>
+
       {/* Role & Team */}
       <div className="adm-form__section">
         <p className="adm-form__section-label">Role & Team</p>
@@ -551,17 +667,38 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
         </div>
       </div>
 
-      {/* Case Study Content */}
+      {/* Overview */}
       <div className="adm-form__section">
-        <p className="adm-form__section-label">Case Study Content</p>
+        <p className="adm-form__section-label">Overview</p>
         <div className="adm-field">
-          <label>Overview</label>
+          <label>Overview Text</label>
           <textarea value={f.overview || ''} onChange={(e) => set('overview', e.target.value)} placeholder="What was this project about? 2-3 sentences." />
         </div>
+        <ImageGalleryEditor
+          images={f.overview_images}
+          onChange={(imgs) => set('overview_images', imgs)}
+          onUpload={onUpload}
+          uploading={uploading}
+          label="Overview images"
+          help="Product shots, context images, or before/after comparisons"
+        />
+      </div>
+
+      {/* Challenge */}
+      <div className="adm-form__section">
+        <p className="adm-form__section-label">Challenge</p>
         <div className="adm-field">
-          <label>Challenge</label>
+          <label>Challenge Text</label>
           <textarea value={f.challenge || ''} onChange={(e) => set('challenge', e.target.value)} placeholder="What problem were you solving? What made it hard?" />
         </div>
+        <ImageGalleryEditor
+          images={f.challenge_images}
+          onChange={(imgs) => set('challenge_images', imgs)}
+          onUpload={onUpload}
+          uploading={uploading}
+          label="Challenge images"
+          help="Screenshots of the old design, user pain points, data visualizations"
+        />
       </div>
 
       {/* Stats (shown on card) */}
@@ -586,7 +723,7 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
 
       {/* Process Steps */}
       <div className="adm-form__section">
-        <p className="adm-form__section-label">Process Steps</p>
+        <p className="adm-form__section-label">Process</p>
         <p className="adm-field__help" style={{ marginBottom: 12 }}>Steps shown in the case study page</p>
         <div className="adm-repeater">
           {steps.map((s, i) => (
@@ -605,11 +742,33 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           ))}
           <button type="button" className="adm-repeater__add" onClick={() => set('process_steps', [...steps, { step: '', detail: '' }])}>+ Add step</button>
         </div>
+        <ImageGalleryEditor
+          images={f.process_images}
+          onChange={(imgs) => set('process_images', imgs)}
+          onUpload={onUpload}
+          uploading={uploading}
+          label="Process images"
+          help="Wireframes, sketches, user flows, whiteboard photos"
+        />
+      </div>
+
+      {/* Solution / Key Screens */}
+      <div className="adm-form__section">
+        <p className="adm-form__section-label">Solution Showcase</p>
+        <p className="adm-field__help" style={{ marginBottom: 4 }}>The final designs — key screens, interactions, and product shots</p>
+        <ImageGalleryEditor
+          images={f.solution_images}
+          onChange={(imgs) => set('solution_images', imgs)}
+          onUpload={onUpload}
+          uploading={uploading}
+          label="Solution images"
+          help="Final UI screens, mockups, prototypes. Use 'Half' or 'Third' layout to show multiple screens side by side."
+        />
       </div>
 
       {/* Impact Metrics */}
       <div className="adm-form__section">
-        <p className="adm-form__section-label">Impact Metrics</p>
+        <p className="adm-form__section-label">Impact</p>
         <p className="adm-field__help" style={{ marginBottom: 12 }}>Key results shown at the bottom of the case study</p>
         <div className="adm-repeater">
           {impact.map((s, i) => (
@@ -625,6 +784,14 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           ))}
           <button type="button" className="adm-repeater__add" onClick={() => set('impact', [...impact, { metric: '', label: '' }])}>+ Add metric</button>
         </div>
+        <ImageGalleryEditor
+          images={f.impact_images}
+          onChange={(imgs) => set('impact_images', imgs)}
+          onUpload={onUpload}
+          uploading={uploading}
+          label="Impact images"
+          help="Charts, dashboards, before/after metrics screenshots"
+        />
       </div>
 
       {/* Navigation */}
