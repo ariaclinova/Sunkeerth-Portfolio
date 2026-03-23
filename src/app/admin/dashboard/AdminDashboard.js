@@ -380,7 +380,7 @@ function ProjectsList({ projects, onEdit, onNew, onDelete }) {
       <div className="adm-items">
         {projects.map((p) => (
           <div className="adm-item" key={p.id}>
-            <div className="adm-item__preview" style={{ background: p.image_url ? `url(${p.image_url}) center/cover` : p.gradient }} />
+            <div className="adm-item__preview" style={{ background: (p.card_image_url || p.image_url) ? `url(${p.card_image_url || p.image_url}) center/cover` : p.gradient }} />
             <div className="adm-item__info">
               <div className="adm-item__name">
                 {p.name}
@@ -509,7 +509,7 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
   const [f, setF] = useState({
     id: '', name: '', tagline: '', description: '', category: 'Product Design',
     color: '#1a1a2e', gradient: 'linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-    image_url: '', badge_icon: '', badge_text: '',
+    image_url: '', card_image_url: '', badge_icon: '', badge_text: '',
     year: new Date().getFullYear().toString(), role: '', timeline: '', team: '',
     overview: '', challenge: '',
     stats: [{ value: '', label: '' }],
@@ -598,16 +598,24 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
         </div>
       </div>
 
-      {/* Cover Image & Appearance */}
+      {/* Images & Appearance */}
       <div className="adm-form__section">
-        <p className="adm-form__section-label">Cover Image & Appearance</p>
-        <div className="adm-field">
-          <label>Cover Image (shown on project card)</label>
-          {f.image_url && <img src={f.image_url} alt="" className="adm-field__img-preview" />}
-          <input type="file" accept="image/*" onChange={handleCoverUpload} disabled={uploading} />
-          {uploading && <p className="adm-field__help">Uploading...</p>}
-          <input value={f.image_url || ''} onChange={(e) => set('image_url', e.target.value)} placeholder="Or paste image URL" style={{ marginTop: 8 }} />
-          <p className="adm-field__help">If no image, the gradient is used as the cover</p>
+        <p className="adm-form__section-label">Images & Appearance</p>
+        <div className="adm-form__row">
+          <div className="adm-field">
+            <label>Card Image (home page)</label>
+            {f.card_image_url && <img src={f.card_image_url} alt="" className="adm-field__img-preview" />}
+            <input type="file" accept="image/*" onChange={async (e) => { const url = await onUpload(e); if (url) set('card_image_url', url) }} disabled={uploading} />
+            <input value={f.card_image_url || ''} onChange={(e) => set('card_image_url', e.target.value)} placeholder="Paste image URL" style={{ marginTop: 8 }} />
+            <p className="adm-field__help">Shown on the project card on the home page</p>
+          </div>
+          <div className="adm-field">
+            <label>Hero Image (project page)</label>
+            {f.image_url && <img src={f.image_url} alt="" className="adm-field__img-preview" />}
+            <input type="file" accept="image/*" onChange={handleCoverUpload} disabled={uploading} />
+            <input value={f.image_url || ''} onChange={(e) => set('image_url', e.target.value)} placeholder="Paste image URL" style={{ marginTop: 8 }} />
+            <p className="adm-field__help">Large banner at the top of the case study page</p>
+          </div>
         </div>
         <div className="adm-form__row">
           <div className="adm-field">

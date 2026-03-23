@@ -123,8 +123,8 @@ export default function Work({ projects, articles, sideProjects }) {
               <div key={p.id} className="card-section" id={`section-${p.id}`} ref={(el) => { sectionRefs.current[p.id] = el }}>
                 <Link href={`/project/${p.id}`} className="work-card reveal">
                   <div className="work-card__image">
-                    <div className="work-card__image-inner" style={{ background: p.image_url ? `url(${p.image_url}) center/cover` : p.gradient }}>
-                      {!p.image_url && <span className="work-card__image-label">{p.name}</span>}
+                    <div className="work-card__image-inner" style={{ background: (p.card_image_url || p.image_url) ? `url(${p.card_image_url || p.image_url}) center/cover` : p.gradient }}>
+                      {!(p.card_image_url || p.image_url) && <span className="work-card__image-label">{p.name}</span>}
                     </div>
                     {p.badge_text && (
                       <div className="work-card__badge">
