@@ -100,7 +100,8 @@ export default function AdminDashboard() {
     const res = await fetch('/api/admin/upload', { method: 'POST', body: fd })
     setUploading(false)
     if (res.ok) { const d = await res.json(); return d.url }
-    setMessage({ type: 'error', text: 'Upload failed' })
+    const err = await res.json().catch(() => ({}))
+    setMessage({ type: 'error', text: err.error || 'Upload failed' })
     return null
   }
 
