@@ -86,8 +86,14 @@ export default async function CaseStudyPage({ params }) {
 
   return (
     <ScrollRevealProvider>
+      <div className="cs-page">
       <style>{`
-        .cs-hero { width: 100%; min-height: 480px; position: relative; display: flex; align-items: flex-end; }
+        .cs-page .pill-nav { background-color: #111 !important; }
+        .cs-page .pill-nav__link { color: rgba(255,255,255,0.7); }
+        .cs-page .pill-nav__link:hover { background-color: rgba(255,255,255,0.1); color: #fff; }
+        .cs-page .pill-nav__link--home { color: #fff; }
+        .cs-page .pill-nav__hamburger span { background-color: #fff; }
+        .cs-hero { width: 100%; min-height: 480px; position: relative; display: flex; align-items: flex-end; margin-top: 64px; }
         .cs-hero__bg { position: absolute; inset: 0; }
         .cs-hero__content { position: relative; z-index: 2; padding: 48px 24px; width: 100%; max-width: 1200px; margin: 0 auto; }
         .cs-hero__back { font-family: var(--font-body); font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 32px; transition: color 0.2s; }
@@ -214,6 +220,7 @@ export default async function CaseStudyPage({ params }) {
         </div>
       </main>
       <Footer />
+      </div>
     </ScrollRevealProvider>
   )
 }
