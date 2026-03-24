@@ -405,6 +405,68 @@ function ProjectsList({ projects, onEdit, onNew, onDelete }) {
 /* ========================================
    IMAGE GALLERY EDITOR (reusable)
    ======================================== */
+/* ========================================
+   TEXT BLOCK EDITOR (reusable)
+   ======================================== */
+function TextBlockEditor({ blocks, onChange, label, help }) {
+  const items = Array.isArray(blocks) ? blocks : []
+
+  const addBlock = () => {
+    onChange([...items, { heading: '', body: '' }])
+  }
+
+  const updateBlock = (i, key, val) => {
+    const arr = [...items]
+    arr[i] = { ...arr[i], [key]: val }
+    onChange(arr)
+  }
+
+  const removeBlock = (i) => {
+    onChange(items.filter((_, j) => j !== i))
+  }
+
+  return (
+    <div style={{ marginTop: 16, padding: 16, background: '#f0f7ff', borderRadius: 10, border: '1px dashed #b3d4fc' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{label || 'Text Blocks'}</p>
+          {help && <p className="adm-field__help">{help}</p>}
+        </div>
+        <button type="button" className="adm-repeater__add" style={{ margin: 0, padding: '6px 14px', borderColor: '#b3d4fc' }} onClick={addBlock}>+ Add Text Block</button>
+      </div>
+
+      {items.length === 0 && (
+        <p style={{ fontSize: 13, color: 'var(--text-tertiary)', textAlign: 'center', padding: '16px 0' }}>
+          No text blocks. Click "+ Add Text Block" to add a heading and body.
+        </p>
+      )}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {items.map((block, i) => (
+          <div key={i} style={{ background: '#fff', borderRadius: 8, padding: 14, border: '1px solid #d6e8fc' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-tertiary)' }}>Text Block {i + 1}</span>
+              <button type="button" className="adm-repeater__remove" onClick={() => removeBlock(i)}>×</button>
+            </div>
+            <input
+              value={block.heading || ''}
+              onChange={(e) => updateBlock(i, 'heading', e.target.value)}
+              placeholder="Heading (optional)"
+              style={{ width: '100%', fontSize: 14, fontWeight: 600, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 6, marginBottom: 8 }}
+            />
+            <textarea
+              value={block.body || ''}
+              onChange={(e) => updateBlock(i, 'body', e.target.value)}
+              placeholder="Body text — describe your work, insights, or context"
+              style={{ width: '100%', fontSize: 13, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 6, minHeight: 80, resize: 'vertical', lineHeight: 1.6 }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function ImageGalleryEditor({ images, onChange, onUpload, uploading, label, help }) {
   const items = Array.isArray(images) ? images : []
 
@@ -517,6 +579,8 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
     impact: [{ metric: '', label: '' }],
     hero_images: [], overview_images: [], challenge_images: [],
     process_images: [], solution_images: [], impact_images: [],
+    hero_text_blocks: [], overview_text_blocks: [], challenge_text_blocks: [],
+    process_text_blocks: [], solution_text_blocks: [], impact_text_blocks: [],
     next_project: '', sort_order: 0,
     ...project,
   })
@@ -662,6 +726,12 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           label="Hero showcase images"
           help="Add key product screenshots or hero shots. These appear prominently at the top."
         />
+        <TextBlockEditor
+          blocks={f.hero_text_blocks}
+          onChange={(b) => set('hero_text_blocks', b)}
+          label="Hero text blocks"
+          help="Add context or intro text below the hero images"
+        />
       </div>
 
       {/* Role & Team */}
@@ -698,6 +768,12 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           label="Overview images"
           help="Product shots, context images, or before/after comparisons"
         />
+        <TextBlockEditor
+          blocks={f.overview_text_blocks}
+          onChange={(b) => set('overview_text_blocks', b)}
+          label="Overview text blocks"
+          help="Additional context, goals, or background info"
+        />
       </div>
 
       {/* Challenge */}
@@ -714,6 +790,12 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           uploading={uploading}
           label="Challenge images"
           help="Screenshots of the old design, user pain points, data visualizations"
+        />
+        <TextBlockEditor
+          blocks={f.challenge_text_blocks}
+          onChange={(b) => set('challenge_text_blocks', b)}
+          label="Challenge text blocks"
+          help="Dive deeper into specific pain points or constraints"
         />
       </div>
 
@@ -766,6 +848,12 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           label="Process images"
           help="Wireframes, sketches, user flows, whiteboard photos"
         />
+        <TextBlockEditor
+          blocks={f.process_text_blocks}
+          onChange={(b) => set('process_text_blocks', b)}
+          label="Process text blocks"
+          help="Explain your thinking, decisions, or learnings from each phase"
+        />
       </div>
 
       {/* Solution / Key Screens */}
@@ -779,6 +867,12 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           uploading={uploading}
           label="Solution images"
           help="Final UI screens, mockups, prototypes. Use 'Half' or 'Third' layout to show multiple screens side by side."
+        />
+        <TextBlockEditor
+          blocks={f.solution_text_blocks}
+          onChange={(b) => set('solution_text_blocks', b)}
+          label="Solution text blocks"
+          help="Explain design decisions, key interactions, or rationale behind the final designs"
         />
       </div>
 
@@ -807,6 +901,12 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           uploading={uploading}
           label="Impact images"
           help="Charts, dashboards, before/after metrics screenshots"
+        />
+        <TextBlockEditor
+          blocks={f.impact_text_blocks}
+          onChange={(b) => set('impact_text_blocks', b)}
+          label="Impact text blocks"
+          help="Additional context on results, learnings, or what you'd do differently"
         />
       </div>
 

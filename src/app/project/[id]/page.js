@@ -20,6 +20,34 @@ export async function generateMetadata({ params }) {
   }
 }
 
+function hasBlocks(blocks) {
+  return Array.isArray(blocks) && blocks.some((b) => b?.heading || b?.body)
+}
+
+function TextBlocks({ blocks }) {
+  if (!hasBlocks(blocks)) return null
+  return (
+    <div style={{ marginTop: 40 }}>
+      {blocks.filter((b) => b?.heading || b?.body).map((block, i) => (
+        <div key={i} style={{ marginBottom: 32 }}>
+          {block.heading && (
+            <h3 style={{
+              fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700,
+              color: 'var(--text-primary)', marginBottom: 10, lineHeight: 1.3
+            }}>{block.heading}</h3>
+          )}
+          {block.body && (
+            <p style={{
+              fontFamily: 'var(--font-body)', fontSize: 16, color: 'var(--text-secondary)',
+              lineHeight: 1.7, maxWidth: 680
+            }}>{block.body}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function hasImages(images) {
   return Array.isArray(images) && images.some((img) => img?.url)
 }
@@ -152,17 +180,20 @@ export default async function CaseStudyPage({ params }) {
 
           {/* Hero Images */}
           <ImageGallery images={project.hero_images} />
+          <TextBlocks blocks={project.hero_text_blocks} />
 
           <div className="cs-section reveal">
             <p className="cs-section__label">Overview</p>
             <p className="cs-section__text">{project.overview}</p>
             <ImageGallery images={project.overview_images} />
+            <TextBlocks blocks={project.overview_text_blocks} />
           </div>
 
           <div className="cs-section reveal">
             <p className="cs-section__label">Challenge</p>
             <p className="cs-section__text">{project.challenge}</p>
             <ImageGallery images={project.challenge_images} />
+            <TextBlocks blocks={project.challenge_text_blocks} />
           </div>
 
           {(project.process_steps || []).length > 0 && (
@@ -180,14 +211,16 @@ export default async function CaseStudyPage({ params }) {
                 ))}
               </div>
               <ImageGallery images={project.process_images} />
+              <TextBlocks blocks={project.process_text_blocks} />
             </div>
           )}
 
           {/* Solution Showcase */}
-          {hasImages(project.solution_images) && (
+          {(hasImages(project.solution_images) || hasBlocks(project.solution_text_blocks)) && (
             <div className="cs-section reveal">
               <p className="cs-section__label">Solution</p>
               <ImageGallery images={project.solution_images} />
+              <TextBlocks blocks={project.solution_text_blocks} />
             </div>
           )}
 
@@ -203,6 +236,7 @@ export default async function CaseStudyPage({ params }) {
                 ))}
               </div>
               <ImageGallery images={project.impact_images} />
+              <TextBlocks blocks={project.impact_text_blocks} />
             </div>
           )}
 
