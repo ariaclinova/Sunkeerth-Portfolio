@@ -30,7 +30,6 @@ export default async function Home() {
       <main>
         <Hero config={config} />
         <Logos companies={companies} />
-        <Highlights highlights={highlights} />
         <Work projects={projects} articles={articles} sideProjects={sideProjects} />
         <Contact config={config} />
       </main>
