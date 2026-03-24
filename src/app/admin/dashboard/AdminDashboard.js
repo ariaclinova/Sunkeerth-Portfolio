@@ -509,7 +509,7 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
   const [f, setF] = useState({
     id: '', name: '', tagline: '', description: '', category: 'Product Design',
     color: '#1a1a2e', gradient: 'linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-    image_url: '', card_image_url: '', badge_icon: '', badge_text: '',
+    image_url: '', card_image_url: '', hero_text_color: '#ffffff', badge_icon: '', badge_text: '',
     year: new Date().getFullYear().toString(), role: '', timeline: '', team: '',
     overview: '', challenge: '',
     stats: [{ value: '', label: '' }],
@@ -630,7 +630,15 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
             </div>
           </div>
         </div>
-        <div className="adm-form__row">
+        <div className="adm-form__row3">
+          <div className="adm-field">
+            <label>Hero Text Color</label>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input type="color" value={f.hero_text_color || '#ffffff'} onChange={(e) => set('hero_text_color', e.target.value)} style={{ width: 40, height: 36, padding: 2, cursor: 'pointer' }} />
+              <input value={f.hero_text_color || '#ffffff'} onChange={(e) => set('hero_text_color', e.target.value)} style={{ flex: 1 }} />
+            </div>
+            <p className="adm-field__help">Color of title & text on the project page hero</p>
+          </div>
           <div className="adm-field">
             <label>Badge Icon</label>
             <input value={f.badge_icon || ''} onChange={(e) => set('badge_icon', e.target.value)} placeholder="e.g. ★" />

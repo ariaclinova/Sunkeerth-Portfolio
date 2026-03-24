@@ -135,10 +135,10 @@ export default async function CaseStudyPage({ params }) {
         <section className="cs-hero">
           <div className="cs-hero__bg" style={{ background: project.image_url ? `url(${project.image_url}) center/cover` : project.gradient }} />
           <div className="cs-hero__content">
-            <Link href="/" className="cs-hero__back">&larr; Back to work</Link>
-            <h1 className="cs-hero__title">{project.name}</h1>
-            <p className="cs-hero__desc">{project.description}</p>
-            {project.badge_text && <span className="cs-hero__badge">{project.badge_icon} {project.badge_text}</span>}
+            <Link href="/" className="cs-hero__back" style={{ color: (project.hero_text_color || '#ffffff') + '99' }}>&larr; Back to work</Link>
+            <h1 className="cs-hero__title" style={{ color: project.hero_text_color || '#ffffff' }}>{project.name}</h1>
+            <p className="cs-hero__desc" style={{ color: (project.hero_text_color || '#ffffff') + 'B3' }}>{project.description}</p>
+            {project.badge_text && <span className="cs-hero__badge" style={{ color: (project.hero_text_color || '#ffffff') + 'E6' }}>{project.badge_icon} {project.badge_text}</span>}
           </div>
         </section>
 
