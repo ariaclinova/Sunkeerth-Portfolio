@@ -97,22 +97,26 @@ export default function Work({ projects, articles, sideProjects }) {
                   </button>
                 ))}
               </div>
+              {(articles || []).length > 0 && (
               <div className="sidebar-group">
                 <p className="sidebar-group__title">Articles</p>
-                {(articles || []).map((a, i) => (
+                {articles.map((a, i) => (
                   <button key={i} className={`sidebar-link ${isActive(`article-${i}`) ? 'sidebar-link--active' : ''}`} onClick={() => scrollTo(`article-${i}`)}>
                     <span className="sidebar-link__text">{a.title}</span>
                   </button>
                 ))}
               </div>
+              )}
+              {(sideProjects || []).length > 0 && (
               <div className="sidebar-group">
                 <p className="sidebar-group__title">Side Projects</p>
-                {(sideProjects || []).map((sp, i) => (
+                {sideProjects.map((sp, i) => (
                   <button key={i} className={`sidebar-link ${isActive(`side-${i}`) ? 'sidebar-link--active' : ''}`} onClick={() => scrollTo(`side-${i}`)}>
                     <span className="sidebar-link__text">{sp.title}</span>
                   </button>
                 ))}
               </div>
+              )}
             </div>
           </aside>
 
@@ -149,31 +153,35 @@ export default function Work({ projects, articles, sideProjects }) {
               </div>
             ))}
 
-            <p className="content-section-label">Articles</p>
-            {(articles || []).map((a, i) => (
-              <div key={i} className="card-section" id={`section-article-${i}`} ref={(el) => { sectionRefs.current[`article-${i}`] = el }}>
-                <a href={a.url} className="article-row reveal">
-                  <div className="article-row__meta">
-                    <span className="article-row__date">{a.date}</span>
-                    <span className="article-row__read">{a.read_time}</span>
-                  </div>
-                  <h3 className="article-row__title">{a.title}</h3>
-                  <p className="article-row__excerpt">{a.excerpt}</p>
-                </a>
-              </div>
-            ))}
-
-            <p className="content-section-label">Side Projects</p>
-            {(sideProjects || []).map((sp, i) => (
-              <div key={i} className="card-section" id={`section-side-${i}`} ref={(el) => { sectionRefs.current[`side-${i}`] = el }}
-                style={{ paddingBottom: i === sideProjects.length - 1 ? 100 : undefined }}>
-                <div className="side-row reveal">
-                  <h3 className="side-row__title">{sp.title}</h3>
-                  <p className="side-row__desc">{sp.description}</p>
-                  <span className="side-row__stats">{sp.stats}</span>
+            {(articles || []).length > 0 && <>
+              <p className="content-section-label">Articles</p>
+              {articles.map((a, i) => (
+                <div key={i} className="card-section" id={`section-article-${i}`} ref={(el) => { sectionRefs.current[`article-${i}`] = el }}>
+                  <a href={a.url} className="article-row reveal">
+                    <div className="article-row__meta">
+                      <span className="article-row__date">{a.date}</span>
+                      <span className="article-row__read">{a.read_time}</span>
+                    </div>
+                    <h3 className="article-row__title">{a.title}</h3>
+                    <p className="article-row__excerpt">{a.excerpt}</p>
+                  </a>
                 </div>
-              </div>
-            ))}
+              ))}
+            </>}
+
+            {(sideProjects || []).length > 0 && <>
+              <p className="content-section-label">Side Projects</p>
+              {sideProjects.map((sp, i) => (
+                <div key={i} className="card-section" id={`section-side-${i}`} ref={(el) => { sectionRefs.current[`side-${i}`] = el }}
+                  style={{ paddingBottom: i === sideProjects.length - 1 ? 100 : undefined }}>
+                  <div className="side-row reveal">
+                    <h3 className="side-row__title">{sp.title}</h3>
+                    <p className="side-row__desc">{sp.description}</p>
+                    <span className="side-row__stats">{sp.stats}</span>
+                  </div>
+                </div>
+              ))}
+            </>}
           </div>
         </div>
       </section>
