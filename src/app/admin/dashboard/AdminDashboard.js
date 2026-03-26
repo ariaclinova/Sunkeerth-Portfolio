@@ -406,6 +406,27 @@ function ProjectsList({ projects, onEdit, onNew, onDelete }) {
    IMAGE GALLERY EDITOR (reusable)
    ======================================== */
 /* ========================================
+   EDITABLE SECTION LABEL
+   ======================================== */
+function EditableSectionLabel({ value, onChange }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 600,
+          textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-tertiary)',
+          border: 'none', borderBottom: '1px dashed var(--border)', background: 'transparent',
+          padding: '4px 0', outline: 'none', width: '100%',
+        }}
+      />
+      <span style={{ fontSize: 11, color: 'var(--text-tertiary)', whiteSpace: 'nowrap', flexShrink: 0 }}>edit heading</span>
+    </div>
+  )
+}
+
+/* ========================================
    TEXT BLOCK EDITOR (reusable)
    ======================================== */
 function TextBlockEditor({ blocks, onChange, label, help }) {
@@ -581,12 +602,16 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
     process_images: [], solution_images: [], impact_images: [],
     hero_text_blocks: [], overview_text_blocks: [], challenge_text_blocks: [],
     process_text_blocks: [], solution_text_blocks: [], impact_text_blocks: [],
+    section_labels: {}, custom_sections: [],
     next_project: '', sort_order: 0,
     ...project,
   })
 
   const stats = Array.isArray(f.stats) ? f.stats : []
   const steps = Array.isArray(f.process_steps) ? f.process_steps : []
+  const customSections = Array.isArray(f.custom_sections) ? f.custom_sections : []
+  const labels = f.section_labels || {}
+  const setLabel = (key, val) => set('section_labels', { ...labels, [key]: val })
   const impact = Array.isArray(f.impact) ? f.impact : []
 
   const set = (key, val) => setF((prev) => ({ ...prev, [key]: val }))
@@ -755,159 +780,141 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
 
       {/* Overview */}
       <div className="adm-form__section">
-        <p className="adm-form__section-label">Overview</p>
+        <EditableSectionLabel value={labels.overview || 'Overview'} onChange={(v) => setLabel('overview', v)} />
         <div className="adm-field">
-          <label>Overview Text</label>
+          <label>Body Text</label>
           <textarea value={f.overview || ''} onChange={(e) => set('overview', e.target.value)} placeholder="What was this project about? 2-3 sentences." />
         </div>
-        <ImageGalleryEditor
-          images={f.overview_images}
-          onChange={(imgs) => set('overview_images', imgs)}
-          onUpload={onUpload}
-          uploading={uploading}
-          label="Overview images"
-          help="Product shots, context images, or before/after comparisons"
-        />
-        <TextBlockEditor
-          blocks={f.overview_text_blocks}
-          onChange={(b) => set('overview_text_blocks', b)}
-          label="Overview text blocks"
-          help="Additional context, goals, or background info"
-        />
+        <ImageGalleryEditor images={f.overview_images} onChange={(imgs) => set('overview_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
+        <TextBlockEditor blocks={f.overview_text_blocks} onChange={(b) => set('overview_text_blocks', b)} label="Text blocks" />
       </div>
 
       {/* Challenge */}
       <div className="adm-form__section">
-        <p className="adm-form__section-label">Challenge</p>
+        <EditableSectionLabel value={labels.challenge || 'Challenge'} onChange={(v) => setLabel('challenge', v)} />
         <div className="adm-field">
-          <label>Challenge Text</label>
-          <textarea value={f.challenge || ''} onChange={(e) => set('challenge', e.target.value)} placeholder="What problem were you solving? What made it hard?" />
+          <label>Body Text</label>
+          <textarea value={f.challenge || ''} onChange={(e) => set('challenge', e.target.value)} placeholder="What problem were you solving?" />
         </div>
-        <ImageGalleryEditor
-          images={f.challenge_images}
-          onChange={(imgs) => set('challenge_images', imgs)}
-          onUpload={onUpload}
-          uploading={uploading}
-          label="Challenge images"
-          help="Screenshots of the old design, user pain points, data visualizations"
-        />
-        <TextBlockEditor
-          blocks={f.challenge_text_blocks}
-          onChange={(b) => set('challenge_text_blocks', b)}
-          label="Challenge text blocks"
-          help="Dive deeper into specific pain points or constraints"
-        />
+        <ImageGalleryEditor images={f.challenge_images} onChange={(imgs) => set('challenge_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
+        <TextBlockEditor blocks={f.challenge_text_blocks} onChange={(b) => set('challenge_text_blocks', b)} label="Text blocks" />
       </div>
 
-      {/* Stats (shown on card) */}
+      {/* Card Stats */}
       <div className="adm-form__section">
         <p className="adm-form__section-label">Card Stats</p>
-        <p className="adm-field__help" style={{ marginBottom: 12 }}>Shown as badges on the project card (e.g. "60% faster insights")</p>
+        <p className="adm-field__help" style={{ marginBottom: 12 }}>Shown as badges on the project card</p>
         <div className="adm-repeater">
           {stats.map((s, i) => (
             <div className="adm-repeater__row" key={i}>
-              <input value={s.value || ''} placeholder="Value (e.g. 60%)" onChange={(e) => {
-                const arr = [...stats]; arr[i] = { ...arr[i], value: e.target.value }; set('stats', arr)
-              }} />
-              <input value={s.label || ''} placeholder="Label (e.g. faster insights)" onChange={(e) => {
-                const arr = [...stats]; arr[i] = { ...arr[i], label: e.target.value }; set('stats', arr)
-              }} />
-              <button type="button" className="adm-repeater__remove" onClick={() => { const arr = stats.filter((_, j) => j !== i); set('stats', arr) }}>×</button>
+              <input value={s.value || ''} placeholder="Value (e.g. 60%)" onChange={(e) => { const arr = [...stats]; arr[i] = { ...arr[i], value: e.target.value }; set('stats', arr) }} />
+              <input value={s.label || ''} placeholder="Label (e.g. faster insights)" onChange={(e) => { const arr = [...stats]; arr[i] = { ...arr[i], label: e.target.value }; set('stats', arr) }} />
+              <button type="button" className="adm-repeater__remove" onClick={() => set('stats', stats.filter((_, j) => j !== i))}>×</button>
             </div>
           ))}
           <button type="button" className="adm-repeater__add" onClick={() => set('stats', [...stats, { value: '', label: '' }])}>+ Add stat</button>
         </div>
       </div>
 
-      {/* Process Steps */}
+      {/* Process */}
       <div className="adm-form__section">
-        <p className="adm-form__section-label">Process</p>
-        <p className="adm-field__help" style={{ marginBottom: 12 }}>Steps shown in the case study page</p>
+        <EditableSectionLabel value={labels.process || 'Process'} onChange={(v) => setLabel('process', v)} />
         <div className="adm-repeater">
           {steps.map((s, i) => (
             <div key={i} style={{ marginBottom: 12, padding: 12, background: '#fafafa', borderRadius: 8 }}>
               <div className="adm-repeater__row" style={{ marginBottom: 6 }}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-tertiary)', width: 24 }}>{String(i+1).padStart(2,'0')}</span>
-                <input value={s.step || ''} placeholder="Step name (e.g. Research)" onChange={(e) => {
-                  const arr = [...steps]; arr[i] = { ...arr[i], step: e.target.value }; set('process_steps', arr)
-                }} />
+                <input value={s.step || ''} placeholder="Step name (e.g. Research)" onChange={(e) => { const arr = [...steps]; arr[i] = { ...arr[i], step: e.target.value }; set('process_steps', arr) }} />
                 <button type="button" className="adm-repeater__remove" onClick={() => set('process_steps', steps.filter((_, j) => j !== i))}>×</button>
               </div>
-              <textarea value={s.detail || ''} placeholder="What did you do in this step?" style={{ width: '100%', fontSize: 13, minHeight: 48 }} onChange={(e) => {
-                const arr = [...steps]; arr[i] = { ...arr[i], detail: e.target.value }; set('process_steps', arr)
-              }} />
+              <textarea value={s.detail || ''} placeholder="What did you do in this step?" style={{ width: '100%', fontSize: 13, minHeight: 48 }} onChange={(e) => { const arr = [...steps]; arr[i] = { ...arr[i], detail: e.target.value }; set('process_steps', arr) }} />
             </div>
           ))}
           <button type="button" className="adm-repeater__add" onClick={() => set('process_steps', [...steps, { step: '', detail: '' }])}>+ Add step</button>
         </div>
-        <ImageGalleryEditor
-          images={f.process_images}
-          onChange={(imgs) => set('process_images', imgs)}
-          onUpload={onUpload}
-          uploading={uploading}
-          label="Process images"
-          help="Wireframes, sketches, user flows, whiteboard photos"
-        />
-        <TextBlockEditor
-          blocks={f.process_text_blocks}
-          onChange={(b) => set('process_text_blocks', b)}
-          label="Process text blocks"
-          help="Explain your thinking, decisions, or learnings from each phase"
-        />
+        <ImageGalleryEditor images={f.process_images} onChange={(imgs) => set('process_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
+        <TextBlockEditor blocks={f.process_text_blocks} onChange={(b) => set('process_text_blocks', b)} label="Text blocks" />
       </div>
 
-      {/* Solution / Key Screens */}
+      {/* Solution */}
       <div className="adm-form__section">
-        <p className="adm-form__section-label">Solution Showcase</p>
-        <p className="adm-field__help" style={{ marginBottom: 4 }}>The final designs — key screens, interactions, and product shots</p>
-        <ImageGalleryEditor
-          images={f.solution_images}
-          onChange={(imgs) => set('solution_images', imgs)}
-          onUpload={onUpload}
-          uploading={uploading}
-          label="Solution images"
-          help="Final UI screens, mockups, prototypes. Use 'Half' or 'Third' layout to show multiple screens side by side."
-        />
-        <TextBlockEditor
-          blocks={f.solution_text_blocks}
-          onChange={(b) => set('solution_text_blocks', b)}
-          label="Solution text blocks"
-          help="Explain design decisions, key interactions, or rationale behind the final designs"
-        />
+        <EditableSectionLabel value={labels.solution || 'Solution'} onChange={(v) => setLabel('solution', v)} />
+        <ImageGalleryEditor images={f.solution_images} onChange={(imgs) => set('solution_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" help="Final UI screens, mockups, prototypes" />
+        <TextBlockEditor blocks={f.solution_text_blocks} onChange={(b) => set('solution_text_blocks', b)} label="Text blocks" />
       </div>
 
-      {/* Impact Metrics */}
+      {/* Impact */}
       <div className="adm-form__section">
-        <p className="adm-form__section-label">Impact</p>
-        <p className="adm-field__help" style={{ marginBottom: 12 }}>Key results shown at the bottom of the case study</p>
+        <EditableSectionLabel value={labels.impact || 'Impact'} onChange={(v) => setLabel('impact', v)} />
         <div className="adm-repeater">
           {impact.map((s, i) => (
             <div className="adm-repeater__row" key={i}>
-              <input value={s.metric || ''} placeholder="Metric (e.g. 60%)" onChange={(e) => {
-                const arr = [...impact]; arr[i] = { ...arr[i], metric: e.target.value }; set('impact', arr)
-              }} />
-              <input value={s.label || ''} placeholder="Label (e.g. Reduction in time)" onChange={(e) => {
-                const arr = [...impact]; arr[i] = { ...arr[i], label: e.target.value }; set('impact', arr)
-              }} />
+              <input value={s.metric || ''} placeholder="Metric (e.g. 60%)" onChange={(e) => { const arr = [...impact]; arr[i] = { ...arr[i], metric: e.target.value }; set('impact', arr) }} />
+              <input value={s.label || ''} placeholder="Label (e.g. Reduction in time)" onChange={(e) => { const arr = [...impact]; arr[i] = { ...arr[i], label: e.target.value }; set('impact', arr) }} />
               <button type="button" className="adm-repeater__remove" onClick={() => set('impact', impact.filter((_, j) => j !== i))}>×</button>
             </div>
           ))}
           <button type="button" className="adm-repeater__add" onClick={() => set('impact', [...impact, { metric: '', label: '' }])}>+ Add metric</button>
         </div>
-        <ImageGalleryEditor
-          images={f.impact_images}
-          onChange={(imgs) => set('impact_images', imgs)}
-          onUpload={onUpload}
-          uploading={uploading}
-          label="Impact images"
-          help="Charts, dashboards, before/after metrics screenshots"
-        />
-        <TextBlockEditor
-          blocks={f.impact_text_blocks}
-          onChange={(b) => set('impact_text_blocks', b)}
-          label="Impact text blocks"
-          help="Additional context on results, learnings, or what you'd do differently"
-        />
+        <ImageGalleryEditor images={f.impact_images} onChange={(imgs) => set('impact_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
+        <TextBlockEditor blocks={f.impact_text_blocks} onChange={(b) => set('impact_text_blocks', b)} label="Text blocks" />
+      </div>
+
+      {/* Custom Sections */}
+      <div className="adm-form__section">
+        <p className="adm-form__section-label">Custom Sections</p>
+        <p className="adm-field__help" style={{ marginBottom: 16 }}>Add your own sections with a heading, body text, and images. These appear after the built-in sections above.</p>
+
+        {customSections.map((sec, i) => (
+          <div key={i} style={{ background: '#fff', border: '2px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-tertiary)' }}>Section {i + 1}</span>
+              <div style={{ display: 'flex', gap: 6 }}>
+                {i > 0 && <button type="button" className="adm-item__btn" style={{ padding: '4px 10px', fontSize: 12 }} onClick={() => {
+                  const arr = [...customSections]; [arr[i-1], arr[i]] = [arr[i], arr[i-1]]; set('custom_sections', arr)
+                }}>Move Up</button>}
+                {i < customSections.length - 1 && <button type="button" className="adm-item__btn" style={{ padding: '4px 10px', fontSize: 12 }} onClick={() => {
+                  const arr = [...customSections]; [arr[i], arr[i+1]] = [arr[i+1], arr[i]]; set('custom_sections', arr)
+                }}>Move Down</button>}
+                <button type="button" className="adm-repeater__remove" onClick={() => set('custom_sections', customSections.filter((_, j) => j !== i))}>×</button>
+              </div>
+            </div>
+            <div className="adm-field">
+              <label>Section Heading</label>
+              <input value={sec.title || ''} onChange={(e) => {
+                const arr = [...customSections]; arr[i] = { ...arr[i], title: e.target.value }; set('custom_sections', arr)
+              }} placeholder="e.g. Design Decisions, Research Findings, User Testing" style={{ fontWeight: 600 }} />
+            </div>
+            <div className="adm-field">
+              <label>Body Text</label>
+              <textarea value={sec.body || ''} onChange={(e) => {
+                const arr = [...customSections]; arr[i] = { ...arr[i], body: e.target.value }; set('custom_sections', arr)
+              }} placeholder="Describe this section..." />
+            </div>
+            <ImageGalleryEditor
+              images={sec.images || []}
+              onChange={(imgs) => {
+                const arr = [...customSections]; arr[i] = { ...arr[i], images: imgs }; set('custom_sections', arr)
+              }}
+              onUpload={onUpload}
+              uploading={uploading}
+              label="Images"
+            />
+            <TextBlockEditor
+              blocks={sec.text_blocks || []}
+              onChange={(blocks) => {
+                const arr = [...customSections]; arr[i] = { ...arr[i], text_blocks: blocks }; set('custom_sections', arr)
+              }}
+              label="Text blocks"
+            />
+          </div>
+        ))}
+
+        <button type="button" onClick={() => set('custom_sections', [...customSections, { title: '', body: '', images: [], text_blocks: [] }])}
+          style={{ width: '100%', padding: '14px', background: 'none', border: '2px dashed var(--border)', borderRadius: 12, cursor: 'pointer', fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', transition: 'border-color 0.15s, color 0.15s' }}
+          onMouseOver={(e) => { e.target.style.borderColor = 'var(--text-primary)'; e.target.style.color = 'var(--text-primary)' }}
+          onMouseOut={(e) => { e.target.style.borderColor = 'var(--border)'; e.target.style.color = 'var(--text-secondary)' }}
+        >+ Add Custom Section</button>
       </div>
 
       {/* Navigation */}

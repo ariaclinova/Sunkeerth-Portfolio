@@ -112,6 +112,9 @@ export default async function CaseStudyPage({ params }) {
     ? projects.find((p) => p.id === project.next_project)
     : null
 
+  const sectionLabels = project.section_labels || {}
+  const sLabel = (key, fallback) => sectionLabels[key] || fallback
+
   return (
     <ScrollRevealProvider>
       <div className="cs-page">
@@ -183,14 +186,14 @@ export default async function CaseStudyPage({ params }) {
           <TextBlocks blocks={project.hero_text_blocks} />
 
           <div className="cs-section reveal">
-            <p className="cs-section__label">Overview</p>
+            <p className="cs-section__label">{sLabel('overview', 'Overview')}</p>
             <p className="cs-section__text">{project.overview}</p>
             <ImageGallery images={project.overview_images} />
             <TextBlocks blocks={project.overview_text_blocks} />
           </div>
 
           <div className="cs-section reveal">
-            <p className="cs-section__label">Challenge</p>
+            <p className="cs-section__label">{sLabel('challenge', 'Challenge')}</p>
             <p className="cs-section__text">{project.challenge}</p>
             <ImageGallery images={project.challenge_images} />
             <TextBlocks blocks={project.challenge_text_blocks} />
@@ -198,7 +201,7 @@ export default async function CaseStudyPage({ params }) {
 
           {(project.process_steps || []).length > 0 && (
             <div className="cs-section reveal">
-              <p className="cs-section__label">Process</p>
+              <p className="cs-section__label">{sLabel('process', 'Process')}</p>
               <div className="cs-process-steps">
                 {(project.process_steps || []).map((step, i) => (
                   <div className="cs-step" key={i}>
@@ -215,10 +218,9 @@ export default async function CaseStudyPage({ params }) {
             </div>
           )}
 
-          {/* Solution Showcase */}
           {(hasImages(project.solution_images) || hasBlocks(project.solution_text_blocks)) && (
             <div className="cs-section reveal">
-              <p className="cs-section__label">Solution</p>
+              <p className="cs-section__label">{sLabel('solution', 'Solution')}</p>
               <ImageGallery images={project.solution_images} />
               <TextBlocks blocks={project.solution_text_blocks} />
             </div>
@@ -226,7 +228,7 @@ export default async function CaseStudyPage({ params }) {
 
           {(project.impact || []).length > 0 && (
             <div className="cs-section reveal">
-              <p className="cs-section__label">Impact</p>
+              <p className="cs-section__label">{sLabel('impact', 'Impact')}</p>
               <div className="cs-impact-grid">
                 {(project.impact || []).map((item, i) => (
                   <div key={i}>
@@ -239,6 +241,18 @@ export default async function CaseStudyPage({ params }) {
               <TextBlocks blocks={project.impact_text_blocks} />
             </div>
           )}
+
+          {/* Custom Sections */}
+          {(project.custom_sections || []).map((sec, i) => (
+            (sec.title || sec.body || hasImages(sec.images) || hasBlocks(sec.text_blocks)) && (
+              <div className="cs-section reveal" key={i}>
+                {sec.title && <p className="cs-section__label">{sec.title}</p>}
+                {sec.body && <p className="cs-section__text">{sec.body}</p>}
+                <ImageGallery images={sec.images} />
+                <TextBlocks blocks={sec.text_blocks} />
+              </div>
+            )
+          ))}
 
           {nextProject && (
             <div className="cs-next reveal">
