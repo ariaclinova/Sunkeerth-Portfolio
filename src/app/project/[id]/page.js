@@ -199,7 +199,7 @@ export default async function CaseStudyPage({ params }) {
             <ImageGallery images={project.challenge_images} />
           </div>
 
-          {(project.process_steps || []).length > 0 && (
+          {((project.process_steps || []).length > 0 || hasImages(project.process_images) || hasBlocks(project.process_text_blocks)) && (
             <div className="cs-section reveal">
               <p className="cs-section__label">{sLabel('process', 'Process')}</p>
               <div className="cs-process-steps">
@@ -226,7 +226,7 @@ export default async function CaseStudyPage({ params }) {
             </div>
           )}
 
-          {(project.impact || []).length > 0 && (
+          {((project.impact || []).length > 0 || hasImages(project.impact_images) || hasBlocks(project.impact_text_blocks)) && (
             <div className="cs-section reveal">
               <p className="cs-section__label">{sLabel('impact', 'Impact')}</p>
               <div className="cs-impact-grid">
