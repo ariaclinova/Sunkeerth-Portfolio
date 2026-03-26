@@ -19,9 +19,7 @@ export default async function Home() {
     getSiteConfig(),
   ])
 
-  const companies = config?.logo_companies
-    ? config.logo_companies.split(',').map((s) => s.trim())
-    : undefined
+  const projectNames = projects.map((p) => p.name)
 
   return (
     <ScrollRevealProvider>
@@ -29,7 +27,7 @@ export default async function Home() {
       <Nav />
       <main>
         <Hero config={config} />
-        <Logos companies={companies} />
+        <Logos companies={projectNames} />
         <Work projects={projects} articles={articles} sideProjects={sideProjects} />
         <Contact config={config} />
       </main>
