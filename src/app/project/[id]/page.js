@@ -39,7 +39,7 @@ function TextBlocks({ blocks }) {
           {block.body && (
             <p style={{
               fontFamily: 'var(--font-body)', fontSize: 16, color: 'var(--text-secondary)',
-              lineHeight: 1.7, maxWidth: 680
+              lineHeight: 1.7
             }}>{block.body}</p>
           )}
         </div>
@@ -134,7 +134,7 @@ export default async function CaseStudyPage({ params }) {
         .cs-section { padding: 64px 0; border-bottom: 1px solid var(--border); }
         .cs-section:last-of-type { border-bottom: none; }
         .cs-section__label { font-family: var(--font-display); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 24px; }
-        .cs-section__text { font-family: var(--font-body); font-size: 16px; color: var(--text-secondary); line-height: 1.7; max-width: 680px; }
+        .cs-section__text { font-family: var(--font-body); font-size: 16px; color: var(--text-secondary); line-height: 1.7; }
         .cs-image-placeholder { width: 100%; aspect-ratio: 16/9; border-radius: 12px; margin: 40px 0 0; background: linear-gradient(145deg, var(--bg-secondary), var(--border-light)); }
         .cs-gallery { margin-top: 40px; }
         .cs-gallery__row { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -149,7 +149,7 @@ export default async function CaseStudyPage({ params }) {
         .cs-step { display: grid; grid-template-columns: 36px 1fr; gap: 16px; }
         .cs-step__num { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text-tertiary); padding-top: 2px; }
         .cs-step__title { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
-        .cs-step__detail { font-family: var(--font-body); font-size: 15px; color: var(--text-secondary); line-height: 1.6; max-width: 680px; }
+        .cs-step__detail { font-family: var(--font-body); font-size: 15px; color: var(--text-secondary); line-height: 1.6; }
         .cs-impact-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 32px; }
         .cs-impact__metric { font-family: var(--font-display); font-size: clamp(28px,4vw,44px); font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); }
         .cs-impact__label { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
