@@ -32,8 +32,8 @@ function TextBlocks({ blocks }) {
         <div key={i} style={{ marginBottom: 32 }}>
           {block.heading && (
             <h3 style={{
-              fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700,
-              color: 'var(--text-primary)', marginBottom: 10, lineHeight: 1.3
+              fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700,
+              color: 'var(--text-primary)', marginBottom: 16, lineHeight: 1.3
             }}>{block.heading}</h3>
           )}
           {block.body && (
@@ -133,7 +133,7 @@ export default async function CaseStudyPage({ params }) {
         .cs-meta__value { font-family: var(--font-body); font-size: 15px; color: var(--text-primary); font-weight: 500; }
         .cs-section { padding: 64px 0; border-bottom: 1px solid var(--border); }
         .cs-section:last-of-type { border-bottom: none; }
-        .cs-section__label { font-family: var(--font-display); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 24px; }
+        .cs-section__label { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; }
         .cs-section__text { font-family: var(--font-body); font-size: 16px; color: var(--text-secondary); line-height: 1.7; }
         .cs-image-placeholder { width: 100%; aspect-ratio: 16/9; border-radius: 12px; margin: 40px 0 0; background: linear-gradient(145deg, var(--bg-secondary), var(--border-light)); }
         .cs-gallery { margin-top: 40px; }
