@@ -743,19 +743,19 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
       <div className="adm-form__section">
         <p className="adm-form__section-label">Hero Images</p>
         <p className="adm-field__help" style={{ marginBottom: 4 }}>Large images shown at the top of the case study, right after the hero banner</p>
+        <TextBlockEditor
+          blocks={f.hero_text_blocks}
+          onChange={(b) => set('hero_text_blocks', b)}
+          label="Hero text blocks"
+          help="Add context or intro text"
+        />
         <ImageGalleryEditor
           images={f.hero_images}
           onChange={(imgs) => set('hero_images', imgs)}
           onUpload={onUpload}
           uploading={uploading}
-          label="Hero showcase images"
-          help="Add key product screenshots or hero shots. These appear prominently at the top."
-        />
-        <TextBlockEditor
-          blocks={f.hero_text_blocks}
-          onChange={(b) => set('hero_text_blocks', b)}
-          label="Hero text blocks"
-          help="Add context or intro text below the hero images"
+          label="Hero images"
+          help="Add key product screenshots or hero shots"
         />
       </div>
 
@@ -785,8 +785,8 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           <label>Body Text</label>
           <textarea value={f.overview || ''} onChange={(e) => set('overview', e.target.value)} placeholder="What was this project about? 2-3 sentences." />
         </div>
-        <ImageGalleryEditor images={f.overview_images} onChange={(imgs) => set('overview_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
         <TextBlockEditor blocks={f.overview_text_blocks} onChange={(b) => set('overview_text_blocks', b)} label="Text blocks" />
+        <ImageGalleryEditor images={f.overview_images} onChange={(imgs) => set('overview_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
       </div>
 
       {/* Challenge */}
@@ -796,8 +796,8 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           <label>Body Text</label>
           <textarea value={f.challenge || ''} onChange={(e) => set('challenge', e.target.value)} placeholder="What problem were you solving?" />
         </div>
-        <ImageGalleryEditor images={f.challenge_images} onChange={(imgs) => set('challenge_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
         <TextBlockEditor blocks={f.challenge_text_blocks} onChange={(b) => set('challenge_text_blocks', b)} label="Text blocks" />
+        <ImageGalleryEditor images={f.challenge_images} onChange={(imgs) => set('challenge_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
       </div>
 
       {/* Card Stats */}
@@ -832,15 +832,15 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           ))}
           <button type="button" className="adm-repeater__add" onClick={() => set('process_steps', [...steps, { step: '', detail: '' }])}>+ Add step</button>
         </div>
-        <ImageGalleryEditor images={f.process_images} onChange={(imgs) => set('process_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
         <TextBlockEditor blocks={f.process_text_blocks} onChange={(b) => set('process_text_blocks', b)} label="Text blocks" />
+        <ImageGalleryEditor images={f.process_images} onChange={(imgs) => set('process_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
       </div>
 
       {/* Solution */}
       <div className="adm-form__section">
         <EditableSectionLabel value={labels.solution || 'Solution'} onChange={(v) => setLabel('solution', v)} />
-        <ImageGalleryEditor images={f.solution_images} onChange={(imgs) => set('solution_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" help="Final UI screens, mockups, prototypes" />
         <TextBlockEditor blocks={f.solution_text_blocks} onChange={(b) => set('solution_text_blocks', b)} label="Text blocks" />
+        <ImageGalleryEditor images={f.solution_images} onChange={(imgs) => set('solution_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" help="Final UI screens, mockups, prototypes" />
       </div>
 
       {/* Impact */}
@@ -856,8 +856,8 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
           ))}
           <button type="button" className="adm-repeater__add" onClick={() => set('impact', [...impact, { metric: '', label: '' }])}>+ Add metric</button>
         </div>
-        <ImageGalleryEditor images={f.impact_images} onChange={(imgs) => set('impact_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
         <TextBlockEditor blocks={f.impact_text_blocks} onChange={(b) => set('impact_text_blocks', b)} label="Text blocks" />
+        <ImageGalleryEditor images={f.impact_images} onChange={(imgs) => set('impact_images', imgs)} onUpload={onUpload} uploading={uploading} label="Images" />
       </div>
 
       {/* Custom Sections */}
@@ -891,6 +891,13 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
                 const arr = [...customSections]; arr[i] = { ...arr[i], body: e.target.value }; set('custom_sections', arr)
               }} placeholder="Describe this section..." />
             </div>
+            <TextBlockEditor
+              blocks={sec.text_blocks || []}
+              onChange={(blocks) => {
+                const arr = [...customSections]; arr[i] = { ...arr[i], text_blocks: blocks }; set('custom_sections', arr)
+              }}
+              label="Text blocks"
+            />
             <ImageGalleryEditor
               images={sec.images || []}
               onChange={(imgs) => {
@@ -899,13 +906,6 @@ function ProjectForm({ project, allProjects, onSave, onCancel, onUpload, uploadi
               onUpload={onUpload}
               uploading={uploading}
               label="Images"
-            />
-            <TextBlockEditor
-              blocks={sec.text_blocks || []}
-              onChange={(blocks) => {
-                const arr = [...customSections]; arr[i] = { ...arr[i], text_blocks: blocks }; set('custom_sections', arr)
-              }}
-              label="Text blocks"
             />
           </div>
         ))}

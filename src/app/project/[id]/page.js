@@ -181,22 +181,22 @@ export default async function CaseStudyPage({ params }) {
             <div><p className="cs-meta__label">Year</p><p className="cs-meta__value">{project.year}</p></div>
           </div>
 
-          {/* Hero Images */}
-          <ImageGallery images={project.hero_images} />
+          {/* Hero */}
           <TextBlocks blocks={project.hero_text_blocks} />
+          <ImageGallery images={project.hero_images} />
 
           <div className="cs-section reveal">
             <p className="cs-section__label">{sLabel('overview', 'Overview')}</p>
             <p className="cs-section__text">{project.overview}</p>
-            <ImageGallery images={project.overview_images} />
             <TextBlocks blocks={project.overview_text_blocks} />
+            <ImageGallery images={project.overview_images} />
           </div>
 
           <div className="cs-section reveal">
             <p className="cs-section__label">{sLabel('challenge', 'Challenge')}</p>
             <p className="cs-section__text">{project.challenge}</p>
-            <ImageGallery images={project.challenge_images} />
             <TextBlocks blocks={project.challenge_text_blocks} />
+            <ImageGallery images={project.challenge_images} />
           </div>
 
           {(project.process_steps || []).length > 0 && (
@@ -213,16 +213,16 @@ export default async function CaseStudyPage({ params }) {
                   </div>
                 ))}
               </div>
-              <ImageGallery images={project.process_images} />
               <TextBlocks blocks={project.process_text_blocks} />
+              <ImageGallery images={project.process_images} />
             </div>
           )}
 
           {(hasImages(project.solution_images) || hasBlocks(project.solution_text_blocks)) && (
             <div className="cs-section reveal">
               <p className="cs-section__label">{sLabel('solution', 'Solution')}</p>
-              <ImageGallery images={project.solution_images} />
               <TextBlocks blocks={project.solution_text_blocks} />
+              <ImageGallery images={project.solution_images} />
             </div>
           )}
 
@@ -237,8 +237,8 @@ export default async function CaseStudyPage({ params }) {
                   </div>
                 ))}
               </div>
-              <ImageGallery images={project.impact_images} />
               <TextBlocks blocks={project.impact_text_blocks} />
+              <ImageGallery images={project.impact_images} />
             </div>
           )}
 
@@ -248,8 +248,8 @@ export default async function CaseStudyPage({ params }) {
               <div className="cs-section reveal" key={i}>
                 {sec.title && <p className="cs-section__label">{sec.title}</p>}
                 {sec.body && <p className="cs-section__text">{sec.body}</p>}
-                <ImageGallery images={sec.images} />
                 <TextBlocks blocks={sec.text_blocks} />
+                <ImageGallery images={sec.images} />
               </div>
             )
           ))}
