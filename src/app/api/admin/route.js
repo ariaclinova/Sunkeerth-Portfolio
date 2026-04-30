@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 import { isAuthenticated } from '@/lib/auth'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
 export async function POST(request) {
   if (!(await isAuthenticated())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const supabase = getSupabase()
+  const supabase = getSupabaseAdmin()
   if (!supabase) {
     return NextResponse.json({ error: 'Supabase not configured' }, { status: 503 })
   }
