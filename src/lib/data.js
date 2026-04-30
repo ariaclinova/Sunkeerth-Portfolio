@@ -1,4 +1,6 @@
-import { getSupabase } from './supabase'
+import { getSupabaseAdmin } from './supabase-admin'
+
+const getSupabase = getSupabaseAdmin
 
 // ---- Fallback data (used when Supabase is not configured) ----
 
