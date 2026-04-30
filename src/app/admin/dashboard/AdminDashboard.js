@@ -24,17 +24,21 @@ export default function AdminDashboard() {
   const fetchAll = useCallback(async () => {
     setLoading(true)
     const tables = ['projects', 'highlights', 'articles', 'side_projects', 'site_config']
-    const results = {}
+    const results = { projects: [], highlights: [], articles: [], side_projects: [], site_config: [] }
     for (const t of tables) {
-      const res = await fetch('/api/admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'list', table: t }),
-      })
-      if (res.status === 401) { router.push('/admin'); return }
-      if (res.ok) {
-        const d = await res.json()
-        results[t] = d.data || []
+      try {
+        const res = await fetch('/api/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'list', table: t }),
+        })
+        if (res.status === 401) { router.push('/admin'); return }
+        if (res.ok) {
+          const d = await res.json()
+          results[t] = d.data || []
+        }
+      } catch {
+        // keep default empty array for this table
       }
     }
     setAllData(results)
